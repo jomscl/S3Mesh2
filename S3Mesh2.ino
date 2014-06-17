@@ -5,11 +5,39 @@
 //#define ID2 // casa 2
 //#define ID3 // casa 3
 
+// modo depuracion, comentar para apagar.
+#define MODO_DEBUG
+
+// macros de debug
+#ifdef MODO_DEBUG
+  #define DEBUG(x)  Serial.print (x)
+  #define DEBUGLN(x)  Serial.println (x)
+  #define DEBUGDEC(x)  Serial.print (x, DEC)
+  #define DEBUGFULL(x)    \
+    Serial.print(millis());     \
+    Serial.print(": ");    \
+    Serial.print(__PRETTY_FUNCTION__); \
+    Serial.print(' ');      \
+    Serial.print(__FILE__);     \
+    Serial.print(':');      \
+    Serial.print(__LINE__);     \
+    Serial.print(' ');      \
+    Serial.println(x);
+#else
+  #define DEBUG(x)
+  #define DEBUGLN(x) 
+  #define DEBUGDEC(x)
+  #define DEBUGFULL(x)
+#endif
+
 // includes
 #include <SoftwareSerial.h>
 #include <Metro.h>
 
 // defines
+// numero telefonico para los SMS
+#define numeroDestinatario 92300776
+
 // puertos
 #define pXbeeRX 3
 #define pXbeeTX 4
@@ -24,12 +52,16 @@
 #define psensor1 13 // puerta
 #define psensor2 14 // ventanas
 #define pllave 15
+#define pOnkey 16 //GSM
+#define pRandom A0 // para el randomize
 
 // constantes
-#define SegSalida 120; // en cuartos de segundo
-#define SegEntrada 120;
-#define SegAlarma 150;
-#define SegAlarmaPausa 50;
+#define SegSalida 120 // en cuartos de segundo
+#define SegEntrada 120
+#define SegAlarma 150
+#define SegAlarmaPausa 50
+#define SegPing 144000 // 250 ms * 4s * 60s * 60m * 10h
+#define VarSegPing 57600 // 250 ms * 4s * 60s * 60m * 4h
 
 // constantes de estado de la alarma
 #define eDesarmado 0
@@ -55,6 +87,11 @@
 #define eLEDPulsoLento 2
 #define eLEDPulsoRapido 3
 
+// variables de tipo de mensaje
+#define tXBeeComunitario 0
+#define tXBeeReporte 1
+
+
 // variables de hardware
 boolean llave;
 boolean sensor1; // puerta
@@ -67,6 +104,7 @@ unsigned int tiempoEntrada=0;
 unsigned int tiempoAlarma=0;
 unsigned int tiempoAlarmaPausa=0;
 byte cicloTimer=0;
+unsigned int tiempoPing=0;
 
 // variables de estado
 byte estadoAlarma=eDesarmado;
@@ -76,20 +114,26 @@ byte estadoLED0=eLEDOff;
 byte estadoLED1=eLEDOff;
 byte estadoLED2=eLEDOff;
 
-// punteros al led que corresponda, según el ID de cada placa
+
+
+
+// punteros al led que corresponda, segun el ID de cada placa
 #ifdef ID1
 byte pLEDPropio=pLED0;
 byte *estadoLEDPropio = &estadoLED0;
+char IDCasa = '1';
 #endif
 
 #ifdef ID2
 byte pLEDPropio=pLED1;
 byte* estadoLEDPropio = &estadoLED1;
+char IDCasa = '2';
 #endif
 
 #ifdef ID3
 byte pLEDPropio=pLED2;
 byte* estadoLEDPropio = &estadoLED2;
+char IDCasa = '3';
 #endif
 
 
@@ -99,11 +143,11 @@ SoftwareSerial SerialXbee(pXbeeRX, pXbeeTX); // RX, TX
 
 // Objeto serial para el modem, si aplica
 #ifdef ID1
-SoftwareSerial SerialGSM(pGSMRX, pGSMTX); // RX, TX
+  SoftwareSerial SerialGSM(pGSMRX, pGSMTX); // RX, TX
 #endif
 
- // objeto timer
- Metro timerMetro = Metro(250); 
+// objeto timer
+Metro timerMetro = Metro(250); 
 
 void setup() {
 	// config de variables
@@ -111,7 +155,6 @@ void setup() {
 
 	// config general
 	config();
-
 }
 
 void loop() {
@@ -122,7 +165,11 @@ void loop() {
   if (SerialXbee.available()){
     atiendeXbee();  
   }
+  
+  #ifdef ID1
   if (SerialGSM.available()){
     atiendeGSM();  
   }
+  #endif  
+
 }

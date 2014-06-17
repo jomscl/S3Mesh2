@@ -1,11 +1,17 @@
 void config(){
+  // configuracion del DEBUG
+  #ifdef MODO_DEBUG
+    Serial.begin(9600);
+  #endif
+
   // iniciar el puerto serial del XBee
   SerialXbee.begin(9600);
   
   // iniciar el puerto serial del modem, si aplica
-#ifdef ID1
-  SerialGSM.begin(9600);
-#endif
+  #ifdef ID1
+    SerialGSM.begin(9600);
+    configModem();
+  #endif
 
   // Configuración pines
   pinMode(pLED0,OUTPUT);
@@ -17,6 +23,12 @@ void config(){
   pinMode(psensor1,INPUT_PULLUP);
   pinMode(psensor2,INPUT_PULLUP);
   pinMode(pllave,INPUT_PULLUP);
+  pinMode(pRandom,INPUT);
   
+  DEBUGLN(F("Encendida"));
+  despachaMensaje(F("Encendida "), IDCasa, tXBeeReporte);
   
+  // inicializar el ping
+  randomSeed(analogRead(pRandom));
+  nuevoTiempoPing();
 }
