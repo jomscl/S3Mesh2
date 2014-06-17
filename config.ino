@@ -8,9 +8,9 @@ void config(){
 #endif
 
   // Configuración pines
+  pinMode(pLED0,OUTPUT);
   pinMode(pLED1,OUTPUT);
   pinMode(pLED2,OUTPUT);
-  pinMode(pLED3,OUTPUT);
   pinMode(pbuzzer,OUTPUT);
   pinMode(pSirena,OUTPUT);
   pinMode(pboton,INPUT_PULLUP);

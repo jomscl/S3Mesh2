@@ -1,46 +1,173 @@
 void atiendeTimer(){
-  // actualiza las entradas
-  llave=digitalRead(pllave);
-  sensor1=digitalRead(psensor1);
-  sensor2=digitalRead(psensor2);
-  boton=digitalRead(pboton);
+  // actualiza las entradas. Son invertidas por el pull up resistor.
+  llave=!digitalRead(pllave);
+  sensor1=!digitalRead(psensor1);
+  sensor2=!digitalRead(psensor2);
+  boton=!digitalRead(pboton);
   
   // analisis según estado
-  if (estado==eDesarmado){ // alarma desarmada
+  if (estadoAlarma==eDesarmado){ // alarma desarmada
     if (llave){ // se acaba de iniar el armado de la alarma
       tiempoSalida=SegSalida;
-      estado=eArmandose;
+      estadoAlarma=eArmandose;
+	  estadoBuzzer=eBuzzerOPulsoRapido;
+	  *estadoLEDPropio=eLEDPulsoRapido;
     }
   }
-  if (estado==eArmandose){ // alarma armandose, descontando tiempo
+
+  if (estadoAlarma==eArmandose){ // alarma armandose, descontando tiempo
     if (tiempoSalida>0){
       tiempoSalida--;
+	  if (!llave){ // si se corta la llave por dentro
+		desarmarAlarma();
+	  }
     }
     else{
-      armar();
-     
-    }
+      armarAlarma();
+	}
   }
   
-  if (estado==eArmada){ // alarma armada
+  if (estadoAlarma==eArmada){ // alarma armada
     if (!llave){ // si se corta la llave por dentro
-      desarmar();
+      desarmarAlarma();
     }
     else{
-      
+      checkSensores();
+    }
+  }
+
+  if (estadoAlarma==eEntrada){ // puerta abierta, timer entrada
+	if (!llave){ // si se corta la llave por dentro
+      desarmarAlarma();
+    }
+    else{
+      if (tiempoEntrada>0){
+		  tiempoEntrada--;
+	  }
+	  else
+	  {
+		  activaAlarma();
+	  }
     }
   }
   
+  if (estadoAlarma==eAlarma){ // alarma sonando
+	if (!llave){ // si se corta la llave por dentro
+      desarmarAlarma();
+    }
+    else{
+		if (tiempoAlarma>0){
+			tiempoAlarma--;
+		}
+		else{
+			activaAlarmaPausa();
+		}
+	}
+  }
+
+  if (estadoAlarma==eAlarmaPausa){ // alarma sonando, pero en pausa
+	if (!llave){ // si se corta la llave por dentro
+      desarmarAlarma();
+    }
+    else{
+		if (tiempoAlarmaPausa>0){
+			tiempoAlarmaPausa--;
+		}
+		else{
+			activaAlarma();
+		}
+	}
+  }
+
   // fin analisis según estado
   
-  
+  // actualizar el cicloTimer
+  if (cicloTimer<16){
+	  cicloTimer++;
+  }
+  else{
+	  cicloTimer=0;
+  }
+
   // actualizar salidas
+  actualizaSalida(pbuzzer,estadoBuzzer);
+  actualizaSalida(pSirena,estadoSirena);
+
+#ifdef ID1
+	actualizaSalida(pLEDPropio,*estadoLEDPropio);
+#else
+	actualizaSalida(pLED0,estadoLED0);
+#endif
+
+#ifdef ID2
+	actualizaSalida(pLEDPropio,*estadoLEDPropio);
+#else
+	actualizaSalida(pLED1,estadoLED1);
+#endif
+
+#ifdef ID3
+	actualizaSalida(pLEDPropio,*estadoLEDPropio);
+#else
+	actualizaSalida(pLED2,estadoLED2);
+#endif
+
 }
 
-void armar(){
-  estado=eArmada;
+void armarAlarma(){
+  estadoAlarma=eArmada;
+  estadoBuzzer=eBuzzerOff;
+  *estadoLEDPropio=eLEDOn;
 }
 
-void desarmar(){
-  estado=eDesarmado;
+void desarmarAlarma(){
+  estadoAlarma=eDesarmado;
+  tiempoSalida=0;
+  tiempoEntrada=0;
+  tiempoAlarma=0;
+  tiempoAlarmaPausa=0;
+  estadoBuzzer=eBuzzerOff;
+  estadoSirena=eSirenaOff;
+  *estadoLEDPropio=eLEDOn;
+}
+
+void checkSensores(){
+	if (sensor1){
+		estadoAlarma=eEntrada;
+		tiempoEntrada=SegEntrada;
+		estadoBuzzer=eBuzzerOPulsoRapido;
+		*estadoLEDPropio=eLEDPulsoRapido;
+	}
+	else{
+		if (sensor2){
+			activaAlarma();
+		}
+	}
+}
+
+void activaAlarma(){
+	estadoAlarma=eAlarma;
+	tiempoAlarma=SegAlarma;
+	estadoSirena=eSirenaOn;
+	estadoBuzzer=eBuzzerOPulsoRapido;
+	*estadoLEDPropio=eLEDPulsoRapido;
+	// envia mensaje
+}
+
+void activaAlarmaPausa(){
+	estadoAlarma=eAlarmaPausa;
+	tiempoAlarmaPausa=SegAlarmaPausa;
+	estadoSirena=eSirenaOff;
+}
+
+void actualizaSalida(byte pin, byte estado){
+	boolean comando=false;
+	if (estado==0){comando=false;}
+	if (estado==1){comando=true;}
+	if (estado==2){
+		if ((cicloTimer/4)%2==0){comando=true;}else{comando=false;}
+	}
+	if (estado==3){
+		if (cicloTimer%2==0){comando=true;}else{comando=false;}
+	}
+	digitalWrite(pin,comando);
 }

@@ -15,33 +15,84 @@
 #define pXbeeTX 4
 #define pGSMRX 5
 #define pGSMTX 6
-#define pLED1 7
-#define pLED2 8
-#define pLED3 9
+#define pLED0 7
+#define pLED1 8
+#define pLED2 9
 #define pbuzzer 10
 #define pSirena 11
 #define pboton 12
-#define psensor1 13
-#define psensor2 14
+#define psensor1 13 // puerta
+#define psensor2 14 // ventanas
 #define pllave 15
 
 // constantes
-#SegSalida 120; // en cuartos de segundo
+#define SegSalida 120; // en cuartos de segundo
+#define SegEntrada 120;
+#define SegAlarma 150;
+#define SegAlarmaPausa 50;
 
-// constantes de estado
+// constantes de estado de la alarma
 #define eDesarmado 0
 #define eArmandose 1
 #define eArmada 2
+#define eAlarma 3
+#define eAlarmaPausa 4
+#define eEntrada 5
 
+// constantes de estado del buzzer
+#define eBuzzerOff 0
+#define eBuzzerOn 1
+#define eBuzzerOPulsoLento 2
+#define eBuzzerOPulsoRapido 3
 
+// constantes de estado de la sirena
+#define eSirenaOff 0
+#define eSirenaOn 1
 
-// variables
+// constantes de estado de los LED
+#define eLEDOff 0
+#define eLEDOn 1
+#define eLEDPulsoLento 2
+#define eLEDPulsoRapido 3
+
+// variables de hardware
 boolean llave;
-boolean sensor1;
-boolean sensor2;
+boolean sensor1; // puerta
+boolean sensor2; // ventanas
 boolean boton;
-unsigned int estado=eDesarmado;
+
+// variables de tiempo
 unsigned int tiempoSalida=0;
+unsigned int tiempoEntrada=0;
+unsigned int tiempoAlarma=0;
+unsigned int tiempoAlarmaPausa=0;
+byte cicloTimer=0;
+
+// variables de estado
+byte estadoAlarma=eDesarmado;
+byte estadoBuzzer=eBuzzerOff;
+byte estadoSirena=eSirenaOff;
+byte estadoLED0=eLEDOff;
+byte estadoLED1=eLEDOff;
+byte estadoLED2=eLEDOff;
+
+// punteros al led que corresponda, según el ID de cada placa
+#ifdef ID1
+byte pLEDPropio=pLED0;
+byte *estadoLEDPropio = &estadoLED0;
+#endif
+
+#ifdef ID2
+byte pLEDPropio=pLED1;
+byte* estadoLEDPropio = &estadoLED1;
+#endif
+
+#ifdef ID3
+byte pLEDPropio=pLED2;
+byte* estadoLEDPropio = &estadoLED2;
+#endif
+
+
 
 // Objeto serial para el Xbee
 SoftwareSerial SerialXbee(pXbeeRX, pXbeeTX); // RX, TX
@@ -51,11 +102,15 @@ SoftwareSerial SerialXbee(pXbeeRX, pXbeeTX); // RX, TX
 SoftwareSerial SerialGSM(pGSMRX, pGSMTX); // RX, TX
 #endif
 
-  // objeto timer
-  Metro timerMetro = Metro(250); 
+ // objeto timer
+ Metro timerMetro = Metro(250); 
 
 void setup() {
-  config();
+	// config de variables
+	*estadoLEDPropio=eLEDOn;
+
+	// config general
+	config();
 
 }
 
