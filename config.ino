@@ -7,6 +7,9 @@ void config(){
   // iniciar el puerto serial del XBee
   SerialXbee.begin(9600);
   
+  // iniciar el xbee
+  xbee.setSerial(SerialXbee);
+  
   // iniciar el puerto serial del modem, si aplica
   #ifdef ID1
     SerialGSM.begin(9600);
@@ -26,7 +29,7 @@ void config(){
   pinMode(pRandom,INPUT);
   
   DEBUGLN(F("Encendida"));
-  despachaMensaje(F("Encendida "), IDCasa, tXBeeReporte);
+  despachaMensaje(mEncendida, IDCasa, tXBeeReporte);
   
   // inicializar el ping
   randomSeed(analogRead(pRandom));

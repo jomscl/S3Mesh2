@@ -42,7 +42,7 @@ void resetGsm(){
   DEBUGLN(F("MODEM OK"));
 }
 
-void despachaSMS(String mensaje, char casa){
+void despachaSMS(byte mensaje, char casa){
   
   // numero del destinatario
   SerialGSM.print(F("AT+CMGS=\""));
@@ -51,7 +51,7 @@ void despachaSMS(String mensaje, char casa){
   delay(10);
   
   // mensaje
-  SerialGSM.print(mensaje);
+  SerialGSM.print(t(mensaje));
   SerialGSM.print(" C:");
   SerialGSM.print(casa);
   SerialGSM.write(26); // control z
@@ -67,4 +67,4 @@ void borrado_sms(){
   delay(200);
 }
 
-#endif
+#endif // fin de la compilación para el ID1

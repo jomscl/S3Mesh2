@@ -1,4 +1,4 @@
-void despachaMensaje(String msg, char casa, boolean tipoMensaje){
+void despachaMensaje(byte msg, char casa, boolean tipoMensaje){
   #ifdef ID1
     if (tipoMensaje==tXBeeComunitario){
       despachaSMS(msg,casa);

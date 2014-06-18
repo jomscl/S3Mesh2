@@ -1,7 +1,7 @@
 // Version 1.0
 
 // modo de funcionamiento. Hay que comentar los que no haya que complilar
-#define ID1 // casa 1 y master
+#define ID1 // casa 1 y GSM.
 //#define ID2 // casa 2
 //#define ID3 // casa 3
 
@@ -33,24 +33,26 @@
 // includes
 #include <SoftwareSerial.h>
 #include <Metro.h>
+#include <XBee.h>
+#include <avr/pgmspace.h>
 
 // defines
 // numero telefonico para los SMS
 #define numeroDestinatario 92300776
 
 // puertos
-#define pXbeeRX 3
-#define pXbeeTX 4
+#define pXbeeRX 3  //r
+#define pXbeeTX 2  //r
 #define pGSMRX 5
 #define pGSMTX 6
-#define pLED0 7
-#define pLED1 8
-#define pLED2 9
-#define pbuzzer 10
+#define pLED0 12 //r
+#define pLED1 11  //r
+#define pLED2 10  //r
+#define pbuzzer 9  //r
 #define pSirena 11
-#define pboton 12
+#define pboton 8  //r
 #define psensor1 13 // puerta
-#define psensor2 14 // ventanas
+#define psensor2 7 // ventanas r
 #define pllave 15
 #define pOnkey 16 //GSM
 #define pRandom A0 // para el randomize
@@ -62,6 +64,7 @@
 #define SegAlarmaPausa 50
 #define SegPing 144000 // 250 ms * 4s * 60s * 60m * 10h
 #define VarSegPing 57600 // 250 ms * 4s * 60s * 60m * 4h
+#define freqBuzzer 1200 // hz
 
 // constantes de estado de la alarma
 #define eDesarmado 0
@@ -87,10 +90,36 @@
 #define eLEDPulsoLento 2
 #define eLEDPulsoRapido 3
 
-// variables de tipo de mensaje
+// variables de tipo de despacho de mensaje
 #define tXBeeComunitario 0
 #define tXBeeReporte 1
 
+// variables de tipo de mensaje
+#define mArmada 0
+#define mDesarmada 1
+#define mInicioAlarma 2
+#define mDespachoAlarma 3
+#define mPing 4
+#define mEncendida 5
+
+// caracteres de mensajes para el XBee
+char mXbee[] ={'A','D','I','D','P','E'};
+
+// mensajes SMS
+prog_char string_0[] PROGMEM = "Armada ";
+prog_char string_1[] PROGMEM = "Desarmada ";
+prog_char string_2[] PROGMEM = "Inicio Alarma ";
+prog_char string_3[] PROGMEM = "Despacho Alarma ";
+prog_char string_4[] PROGMEM = "Ping ";
+prog_char string_5[] PROGMEM = "Encendida ";
+
+char buffer[16];    // debe ser tan grande como el string más grande.
+
+// Vector de mensajes
+PROGMEM const char *string_table[] = 	 
+{  
+  string_0, string_1, string_2, string_3, string_4, string_5
+};
 
 // variables de hardware
 boolean llave;
@@ -114,9 +143,6 @@ byte estadoLED0=eLEDOff;
 byte estadoLED1=eLEDOff;
 byte estadoLED2=eLEDOff;
 
-
-
-
 // punteros al led que corresponda, segun el ID de cada placa
 #ifdef ID1
 byte pLEDPropio=pLED0;
@@ -136,7 +162,17 @@ byte* estadoLEDPropio = &estadoLED2;
 char IDCasa = '3';
 #endif
 
+// objeto Xbee
+XBee xbee = XBee();
 
+// buffer de datos del xbee
+uint8_t mensajeXbee[] = { 0, 0 };
+
+// parametros del Xbee
+// SH + SL Address of receiving XBee
+XBeeAddress64 addr64 = XBeeAddress64(0x0013a200, 0x403e0f30);
+ZBTxRequest zbTx = ZBTxRequest(addr64, mensajeXbee, sizeof(mensajeXbee));
+ZBTxStatusResponse txStatus = ZBTxStatusResponse();
 
 // Objeto serial para el Xbee
 SoftwareSerial SerialXbee(pXbeeRX, pXbeeTX); // RX, TX
@@ -173,3 +209,11 @@ void loop() {
   #endif  
 
 }
+
+
+// rutina para recuperar textos desde flash
+char* t(int texto){
+  strcpy_P(buffer, (char*)pgm_read_word(&(string_table[texto])));
+  return buffer;
+}
+

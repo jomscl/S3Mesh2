@@ -94,32 +94,32 @@ void atiendeTimer(){
   
   // actualizar el tiempo ping
   if (tiempoPing==0){
-    despachaMensaje(F("Ping "), IDCasa, tXBeeReporte);
+    despachaMensaje(mPing, IDCasa, tXBeeReporte);
     nuevoTiempoPing();
   }
   else{
     tiempoPing--;
   }
   // actualizar salidas
-  actualizaSalida(pbuzzer,estadoBuzzer);
-  actualizaSalida(pSirena,estadoSirena);
+  actualizaSalida(pbuzzer,estadoBuzzer,true);
+  actualizaSalida(pSirena,estadoSirena,false);
 
   #ifdef ID1
-  	actualizaSalida(pLEDPropio,*estadoLEDPropio);
+  	actualizaSalida(pLEDPropio,*estadoLEDPropio,false);
   #else
-  	actualizaSalida(pLED0,estadoLED0);
+  	actualizaSalida(pLED0,estadoLED0,false);
   #endif
   
   #ifdef ID2
-  	actualizaSalida(pLEDPropio,*estadoLEDPropio);
+  	actualizaSalida(pLEDPropio,*estadoLEDPropio,false);
   #else
-  	actualizaSalida(pLED1,estadoLED1);
+  	actualizaSalida(pLED1,estadoLED1,false);
   #endif
   
   #ifdef ID3
-  	actualizaSalida(pLEDPropio,*estadoLEDPropio);
+  	actualizaSalida(pLEDPropio,*estadoLEDPropio,false);
   #else
-  	actualizaSalida(pLED2,estadoLED2);
+  	actualizaSalida(pLED2,estadoLED2,false);
   #endif
 
 }
@@ -128,7 +128,7 @@ void armarAlarma(){
   estadoAlarma=eArmada;
   estadoBuzzer=eBuzzerOff;
   *estadoLEDPropio=eLEDOn;
-  despachaMensaje(F("Armada "), IDCasa, tXBeeReporte);
+  despachaMensaje(mArmada, IDCasa, tXBeeReporte);
 }
 
 void desarmarAlarma(){
@@ -140,7 +140,7 @@ void desarmarAlarma(){
   estadoBuzzer=eBuzzerOff;
   estadoSirena=eSirenaOff;
   *estadoLEDPropio=eLEDOn;
-  despachaMensaje(F("Desarmada "), IDCasa, tXBeeReporte);
+  despachaMensaje(mDesarmada, IDCasa, tXBeeReporte);
 }
 
 void checkSensores(){
@@ -164,19 +164,21 @@ void activaAlarma(){
     	estadoBuzzer=eBuzzerOPulsoRapido;
     	*estadoLEDPropio=eLEDPulsoRapido;
     	// envia mensaje
-        despachaMensaje(F("Inicio Alarma "), IDCasa, tXBeeReporte);
+        despachaMensaje(mInicioAlarma, IDCasa, tXBeeReporte);
 }
 
 void activaAlarmaPausa(){
 	estadoAlarma=eAlarmaPausa;
 	tiempoAlarmaPausa=SegAlarmaPausa;
 	estadoSirena=eSirenaOff;
-        despachaMensaje(F("Despacho Alarma "), IDCasa, tXBeeComunitario);
+        despachaMensaje(mDespachoAlarma, IDCasa, tXBeeComunitario);
 }
 
-void actualizaSalida(byte pin, byte estado){
+void actualizaSalida(byte pin, byte estado, boolean tono){
 	boolean comando=false;
-	if (estado==0){comando=false;}
+	
+        // analisis del tipo de accion, basado en el tipo de estado
+        if (estado==0){comando=false;}
 	if (estado==1){comando=true;}
 	if (estado==2){
 		if ((cicloTimer/4)%2==0){comando=true;}else{comando=false;}
@@ -184,7 +186,13 @@ void actualizaSalida(byte pin, byte estado){
 	if (estado==3){
 		if (cicloTimer%2==0){comando=true;}else{comando=false;}
 	}
-	digitalWrite(pin,comando);
+
+        // analisis de como se debe efectuar la salida, ya sea por tono o por digital write
+	if (tono){
+          if (comando){tone(pin,freqBuzzer);}
+          else{noTone(pin);}
+        }
+        else{digitalWrite(pin,comando);}
 }
 
 void nuevoTiempoPing(){
