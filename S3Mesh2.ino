@@ -1,4 +1,7 @@
 // Version 1.0
+// prototipo requerido por visualmicro. Me parece que es un error
+void loop();
+
 
 // modo de funcionamiento. Hay que comentar los que no haya que complilar
 #define ID1 // casa 1 y GSM.
