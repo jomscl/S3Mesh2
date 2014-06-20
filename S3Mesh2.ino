@@ -104,9 +104,16 @@ void loop();
 #define mDespachoAlarma 3
 #define mPing 4
 #define mEncendida 5
+#define nMensajes 6
 
-// caracteres de mensajes para el XBee
-char mXbee[] ={'A','D','I','D','P','E'};
+struct stMensaje{
+  byte tipoMensaje;
+  char mXbee;
+  byte idMensaje;
+};
+
+stMensaje mensajesXbee[nMensajes];
+//char mXbee[] ={'A','D','I','S','P','E'};
 
 // mensajes SMS
 prog_char string_0[] PROGMEM = "Armada ";
@@ -167,15 +174,20 @@ char IDCasa = '3';
 
 // objeto Xbee
 XBee xbee = XBee();
-
+XBeeResponse response = XBeeResponse();
 // buffer de datos del xbee
-uint8_t mensajeXbee[] = { 0, 0 };
+uint8_t mensajeXbeeSalida[] = { 0, 0 };
+uint8_t mensajeXbeeEntrada[] = { 0, 0 };
 
 // parametros del Xbee
 // SH + SL Address of receiving XBee
 XBeeAddress64 addr64 = XBeeAddress64(0x0013a200, 0x403e0f30);
-ZBTxRequest zbTx = ZBTxRequest(addr64, mensajeXbee, sizeof(mensajeXbee));
+
+// objetos del xbee
+ZBTxRequest zbTx = ZBTxRequest(addr64, mensajeXbeeSalida, sizeof(mensajeXbeeSalida));
 ZBTxStatusResponse txStatus = ZBTxStatusResponse();
+ZBRxResponse rx = ZBRxResponse();
+ModemStatusResponse msr = ModemStatusResponse();
 
 // Objeto serial para el Xbee
 SoftwareSerial SerialXbee(pXbeeRX, pXbeeTX); // RX, TX

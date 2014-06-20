@@ -29,9 +29,24 @@ void config(){
   pinMode(pRandom,INPUT);
   
   DEBUGLN(F("Encendida"));
-  despachaMensaje(mEncendida, IDCasa, tXBeeReporte);
+  despachaMensaje(mEncendida, IDCasa); // reporte
   
   // inicializar el ping
   randomSeed(analogRead(pRandom));
   nuevoTiempoPing();
+
+
+  // crear los mensajes
+  creaMensaje(tXBeeReporte,'A',0);
+  creaMensaje(tXBeeReporte,'D',1);
+  creaMensaje(tXBeeReporte,'I',2);
+  creaMensaje(tXBeeComunitario,'S',3);
+  creaMensaje(tXBeeReporte,'P',4);
+  creaMensaje(tXBeeReporte,'E',5);
+}
+
+void creaMensaje(boolean tipoMensaje, char mXbee, byte idMensaje){
+  mensajesXbee[idMensaje].idMensaje=idMensaje;
+  mensajesXbee[idMensaje].mXbee=mXbee;
+  mensajesXbee[idMensaje].tipoMensaje=tipoMensaje;
 }

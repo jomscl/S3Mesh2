@@ -94,7 +94,7 @@ void atiendeTimer(){
   
   // actualizar el tiempo ping
   if (tiempoPing==0){
-    despachaMensaje(mPing, IDCasa, tXBeeReporte);
+    despachaMensaje(mPing, IDCasa); // reporte
     nuevoTiempoPing();
   }
   else{
@@ -128,7 +128,7 @@ void armarAlarma(){
   estadoAlarma=eArmada;
   estadoBuzzer=eBuzzerOff;
   *estadoLEDPropio=eLEDOn;
-  despachaMensaje(mArmada, IDCasa, tXBeeReporte);
+  despachaMensaje(mArmada, IDCasa); // reporte
 }
 
 void desarmarAlarma(){
@@ -140,7 +140,7 @@ void desarmarAlarma(){
   estadoBuzzer=eBuzzerOff;
   estadoSirena=eSirenaOff;
   *estadoLEDPropio=eLEDOn;
-  despachaMensaje(mDesarmada, IDCasa, tXBeeReporte);
+  despachaMensaje(mDesarmada, IDCasa); // reporte
 }
 
 void checkSensores(){
@@ -164,14 +164,14 @@ void activaAlarma(){
     	estadoBuzzer=eBuzzerOPulsoRapido;
     	*estadoLEDPropio=eLEDPulsoRapido;
     	// envia mensaje
-        despachaMensaje(mInicioAlarma, IDCasa, tXBeeReporte);
+        despachaMensaje(mInicioAlarma, IDCasa); // reporte
 }
 
 void activaAlarmaPausa(){
 	estadoAlarma=eAlarmaPausa;
 	tiempoAlarmaPausa=SegAlarmaPausa;
 	estadoSirena=eSirenaOff;
-        despachaMensaje(mDespachoAlarma, IDCasa, tXBeeComunitario);
+        despachaMensaje(mDespachoAlarma, IDCasa ); // comunitario
 }
 
 void actualizaSalida(byte pin, byte estado, boolean tono){
