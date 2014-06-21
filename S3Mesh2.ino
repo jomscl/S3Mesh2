@@ -4,7 +4,7 @@ void loop();
 
 
 // modo de funcionamiento. Hay que comentar los que no haya que complilar
-#define ID1 // casa 1 y GSM.
+#define ID2 // casa 1 y GSM.
 //#define ID2 // casa 2
 //#define ID3 // casa 3
 
@@ -16,6 +16,7 @@ void loop();
   #define DEBUG(x)  Serial.print (x)
   #define DEBUGLN(x)  Serial.println (x)
   #define DEBUGDEC(x)  Serial.print (x, DEC)
+  #define DEBUGW(x)  Serial.write (x)
   #define DEBUGFULL(x)    \
     Serial.print(millis());     \
     Serial.print(": ");    \
@@ -30,6 +31,7 @@ void loop();
   #define DEBUG(x)
   #define DEBUGLN(x) 
   #define DEBUGDEC(x)
+  #define DEBUGW(x) 
   #define DEBUGFULL(x)
 #endif
 
@@ -46,25 +48,25 @@ void loop();
 // puertos
 #define pXbeeRX 3  //r
 #define pXbeeTX 2  //r
-#define pGSMRX 5
-#define pGSMTX 6
+#define pGSMRX 4
+#define pGSMTX 5
 #define pLED0 12 //r
 #define pLED1 11  //r
 #define pLED2 10  //r
 #define pbuzzer 9  //r
-#define pSirena 11
+#define pSirena 6 //r
 #define pboton 8  //r
-#define psensor1 13 // puerta
+#define psensor1 13 // puerta r
 #define psensor2 7 // ventanas r
-#define pllave 15
+#define pllave 15 //r A1
 #define pOnkey 16 //GSM
 #define pRandom A0 // para el randomize
 
 // constantes
-#define SegSalida 120 // en cuartos de segundo
-#define SegEntrada 120
-#define SegAlarma 150
-#define SegAlarmaPausa 50
+#define SegSalida 20//120 // en cuartos de segundo
+#define SegEntrada 12//120
+#define SegAlarma 40//150
+#define SegAlarmaPausa 5//50
 #define SegPing 144000 // 250 ms * 4s * 60s * 60m * 10h
 #define VarSegPing 57600 // 250 ms * 4s * 60s * 60m * 4h
 #define freqBuzzer 1200 // hz
@@ -181,7 +183,8 @@ uint8_t mensajeXbeeEntrada[] = { 0, 0 };
 
 // parametros del Xbee
 // SH + SL Address of receiving XBee
-XBeeAddress64 addr64 = XBeeAddress64(0x0013a200, 0x403e0f30);
+// con la direccion ffff se hace un broadcast
+XBeeAddress64 addr64 = XBeeAddress64(0x00000000, 0x0000ffff);
 
 // objetos del xbee
 ZBTxRequest zbTx = ZBTxRequest(addr64, mensajeXbeeSalida, sizeof(mensajeXbeeSalida));

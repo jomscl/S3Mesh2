@@ -20,6 +20,7 @@
     <None Include="XBEE.ino" />
     <None Include="config.ino" />
     <None Include="timer.ino" />
+    <None Include="msgManager.ino" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Visual Micro\.S3Mesh2.vsarduino.h">

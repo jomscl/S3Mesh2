@@ -31,6 +31,9 @@ void config(){
   DEBUGLN(F("Encendida"));
   despachaMensaje(mEncendida, IDCasa); // reporte
   
+  desarmarAlarma();
+  imprimeEstadoAlarma();
+  
   // inicializar el ping
   randomSeed(analogRead(pRandom));
   nuevoTiempoPing();

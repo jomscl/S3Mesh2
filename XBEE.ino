@@ -19,12 +19,13 @@ void atiendeXbee(){
         mensajeXbeeEntrada[0]=rx.getData(0);
         mensajeXbeeEntrada[1]=rx.getData(1);
         
-        DEBUG(F("Mensaje recibido por Xbee: "));
-        DEBUG(mensajeXbeeEntrada[0]);
-        DEBUGLN(mensajeXbeeEntrada[1]);
-        
+        DEBUGLN(F("Mensaje recibido por Xbee: "));
+        DEBUGW(mensajeXbeeEntrada[0]);
+        DEBUGW(mensajeXbeeEntrada[1]);
+		DEBUGLN();
+
         // procesar el mensaje
-        recibeMensaje(mensajeXbeeEntrada[0],mensajeXbeeEntrada[1]);
+        recibeMensaje((char)mensajeXbeeEntrada[0],mensajeXbeeEntrada[1]);
         
       } else if (xbee.getResponse().getApiId() == MODEM_STATUS_RESPONSE) {
         xbee.getResponse().getModemStatusResponse(msr);
@@ -65,7 +66,7 @@ void despachaXbee(byte msg, char casa){
 
       if (txStatus.getDeliveryStatus() == SUCCESS) {
         // El dato llegó correctamente
-        DEBUGLN(F("Transmisión XBee OK"));
+        DEBUGLN(F("Transmision XBee OK"));
       }
       else {
         // El dato no llegó a destino

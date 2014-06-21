@@ -1,17 +1,18 @@
 void atiendeTimer(){
   // actualiza las entradas. Son invertidas por el pull up resistor.
-  llave=!digitalRead(pllave);
+  llave=digitalRead(pllave);
   sensor1=!digitalRead(psensor1);
-  sensor2=!digitalRead(psensor2);
+  sensor2=digitalRead(psensor2);
   boton=!digitalRead(pboton);
   
   // analisis según estado
   if (estadoAlarma==eDesarmado){ // alarma desarmada
     if (llave){ // se acaba de iniar el armado de la alarma
-      tiempoSalida=SegSalida;
-      estadoAlarma=eArmandose;
-      estadoBuzzer=eBuzzerOPulsoRapido;
-      *estadoLEDPropio=eLEDPulsoRapido;
+		tiempoSalida=SegSalida;
+		estadoAlarma=eArmandose;
+		imprimeEstadoAlarma();
+		estadoBuzzer=eBuzzerOPulsoLento;
+		*estadoLEDPropio=eLEDPulsoRapido;
     }
   }
 
@@ -79,8 +80,7 @@ void atiendeTimer(){
 	}
   }
   
-  DEBUG(F("Estado = "));
-  DEBUGDEC(estadoAlarma);
+
   
   // fin analisis según estado
   
@@ -126,6 +126,7 @@ void atiendeTimer(){
 
 void armarAlarma(){
   estadoAlarma=eArmada;
+  imprimeEstadoAlarma();
   estadoBuzzer=eBuzzerOff;
   *estadoLEDPropio=eLEDOn;
   despachaMensaje(mArmada, IDCasa); // reporte
@@ -133,21 +134,23 @@ void armarAlarma(){
 
 void desarmarAlarma(){
   estadoAlarma=eDesarmado;
+  imprimeEstadoAlarma();
   tiempoSalida=0;
   tiempoEntrada=0;
   tiempoAlarma=0;
   tiempoAlarmaPausa=0;
   estadoBuzzer=eBuzzerOff;
   estadoSirena=eSirenaOff;
-  *estadoLEDPropio=eLEDOn;
+  *estadoLEDPropio=eLEDOff;
   despachaMensaje(mDesarmada, IDCasa); // reporte
 }
 
 void checkSensores(){
 	if (sensor1){
 		estadoAlarma=eEntrada;
+		imprimeEstadoAlarma();
 		tiempoEntrada=SegEntrada;
-		estadoBuzzer=eBuzzerOPulsoRapido;
+		estadoBuzzer=eBuzzerOPulsoLento;
 		*estadoLEDPropio=eLEDPulsoRapido;
 	}
 	else{
@@ -159,6 +162,7 @@ void checkSensores(){
 
 void activaAlarma(){
     	estadoAlarma=eAlarma;
+		imprimeEstadoAlarma();
     	tiempoAlarma=SegAlarma;
     	estadoSirena=eSirenaOn;
     	estadoBuzzer=eBuzzerOPulsoRapido;
@@ -169,6 +173,7 @@ void activaAlarma(){
 
 void activaAlarmaPausa(){
 	estadoAlarma=eAlarmaPausa;
+	imprimeEstadoAlarma();
 	tiempoAlarmaPausa=SegAlarmaPausa;
 	estadoSirena=eSirenaOff;
         despachaMensaje(mDespachoAlarma, IDCasa ); // comunitario
@@ -197,4 +202,9 @@ void actualizaSalida(byte pin, byte estado, boolean tono){
 
 void nuevoTiempoPing(){
   tiempoPing=SegPing+random(VarSegPing); 
+}
+
+void imprimeEstadoAlarma(){
+	DEBUG(F("Estado = "));
+	DEBUGLN(estadoAlarma);
 }
