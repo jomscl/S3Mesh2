@@ -4,17 +4,21 @@ void config(){
     Serial.begin(9600);
   #endif
 
+
+  
   // iniciar el puerto serial del XBee
   SerialXbee.begin(9600);
   
   // iniciar el xbee
   xbee.setSerial(SerialXbee);
   
-  // iniciar el puerto serial del modem, si aplica
+    // iniciar el puerto serial del modem, si aplica
   #ifdef ID1
     SerialGSM.begin(9600);
     configModem();
   #endif
+  
+	SerialXbee.listen();
 
   // Configuración pines
   pinMode(pLED0,OUTPUT);

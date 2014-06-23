@@ -25,7 +25,7 @@ void recibeMensaje(char msg, char casa){
   // ver si son mensajes comunitarios
   if (mensajesXbee[idMsg].tipoMensaje==tXBeeComunitario){
     // tomar acciones
-    
+    informaAlarma(casa);
   }
 }
 
@@ -33,4 +33,23 @@ byte IdMensaje(byte msg){
   for (int i=0;i<nMensajes;i++){
     if (mensajesXbee[i].mXbee==msg) {return i;} 
   }
+}
+
+void informaAlarma(char casa){
+	DEBUG(F("Alarma casa "));
+	DEBUGW(casa);
+	DEBUGLN();
+	estadoBuzzer=eBuzzerPulsoRapido;
+	if (casa=='1'){
+		tiempoInformeLED0=SegInformeLED;
+		estadoLED0=eLEDPulsoRapido;
+	}
+	if (casa=='2'){
+		tiempoInformeLED1=SegInformeLED;
+		estadoLED1=eLEDPulsoRapido;
+	}
+	if (casa=='3'){
+		tiempoInformeLED2=SegInformeLED;
+		estadoLED2=eLEDPulsoRapido;
+	}
 }

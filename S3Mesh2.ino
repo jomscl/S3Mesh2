@@ -2,9 +2,8 @@
 // prototipo requerido por visualmicro. Me parece que es un error
 void loop();
 
-
 // modo de funcionamiento. Hay que comentar los que no haya que complilar
-#define ID2 // casa 1 y GSM.
+#define ID1 // casa 1 y GSM.
 //#define ID2 // casa 2
 //#define ID3 // casa 3
 
@@ -48,8 +47,8 @@ void loop();
 // puertos
 #define pXbeeRX 3  //r
 #define pXbeeTX 2  //r
-#define pGSMRX 4
-#define pGSMTX 5
+#define pGSMRX 4	//r amarillo
+#define pGSMTX 5	// r blanco
 #define pLED0 12 //r
 #define pLED1 11  //r
 #define pLED2 10  //r
@@ -59,7 +58,7 @@ void loop();
 #define psensor1 13 // puerta r
 #define psensor2 7 // ventanas r
 #define pllave 15 //r A1
-#define pOnkey 16 //GSM
+#define pOnkey 16 //GSM A2, verde
 #define pRandom A0 // para el randomize
 
 // constantes
@@ -69,6 +68,7 @@ void loop();
 #define SegAlarmaPausa 5//50
 #define SegPing 144000 // 250 ms * 4s * 60s * 60m * 10h
 #define VarSegPing 57600 // 250 ms * 4s * 60s * 60m * 4h
+#define SegInformeLED 40//150
 #define freqBuzzer 1200 // hz
 
 // constantes de estado de la alarma
@@ -82,8 +82,8 @@ void loop();
 // constantes de estado del buzzer
 #define eBuzzerOff 0
 #define eBuzzerOn 1
-#define eBuzzerOPulsoLento 2
-#define eBuzzerOPulsoRapido 3
+#define eBuzzerPulsoLento 2
+#define eBuzzerPulsoRapido 3
 
 // constantes de estado de la sirena
 #define eSirenaOff 0
@@ -146,6 +146,9 @@ unsigned int tiempoAlarma=0;
 unsigned int tiempoAlarmaPausa=0;
 byte cicloTimer=0;
 unsigned int tiempoPing=0;
+unsigned int tiempoInformeLED0=0;
+unsigned int tiempoInformeLED1=0;
+unsigned int tiempoInformeLED2=0;
 
 // variables de estado
 byte estadoAlarma=eDesarmado;
@@ -216,7 +219,7 @@ void loop() {
     // realiza las tareas por timer
     atiendeTimer();  
   }
-  if (SerialXbee.available()){
+  if (true){//(SerialXbee.available()){
     atiendeXbee();  
   }
   

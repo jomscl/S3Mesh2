@@ -24,10 +24,10 @@ void resetGsm(){
     }  
     
     // ciclo de reinicio
-    digitalWrite(pOnkey,HIGH);
+    //digitalWrite(pOnkey,HIGH);
     DEBUGLN(F("MODEM Apagado"));
     delay(5000);
-    digitalWrite(pOnkey,LOW);
+    //digitalWrite(pOnkey,LOW);
     DEBUGLN(F("MODEM Encendido"));
     delay(5000);
     
@@ -36,7 +36,8 @@ void resetGsm(){
     delay(200);
     while (SerialGSM.available()){
       c=SerialGSM.read();
-      if(c==48){ok=true;}
+	  DEBUG(c);
+      if(c=='O'){ok=true;}
     }
   }
   DEBUGLN(F("MODEM OK"));

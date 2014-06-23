@@ -2,9 +2,10 @@ void atiendeXbee(){
   xbee.readPacket();
   if (xbee.getResponse().isAvailable()) {
     // hay un paquete disponible
+	  DEBUGLN(F("Paquete disponible")); 
     if (xbee.getResponse().getApiId() == ZB_RX_RESPONSE) {
         // hay un packet RX disponible
-        
+        DEBUGLN(F("Paquete RX disponible")); 
         // now fill our zb rx class
         xbee.getResponse().getZBRxResponse(rx);
             

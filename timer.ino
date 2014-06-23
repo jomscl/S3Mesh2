@@ -11,7 +11,7 @@ void atiendeTimer(){
 		tiempoSalida=SegSalida;
 		estadoAlarma=eArmandose;
 		imprimeEstadoAlarma();
-		estadoBuzzer=eBuzzerOPulsoLento;
+		estadoBuzzer=eBuzzerPulsoLento;
 		*estadoLEDPropio=eLEDPulsoRapido;
     }
   }
@@ -100,6 +100,34 @@ void atiendeTimer(){
   else{
     tiempoPing--;
   }
+
+  // actualizar las alertas de las otras casas
+	#ifndef ID1
+		if (tiempoInformeLED0>0){tiempoInformeLED0--;}
+		else{estadoLED0=eLEDOff;}
+	#endif
+	#ifndef ID2
+		if (tiempoInformeLED1>0){tiempoInformeLED1--;}
+		else{estadoLED1=eLEDOff;}
+	#endif
+	#ifndef ID3
+		if (tiempoInformeLED2>0){tiempoInformeLED2--;}
+		else{estadoLED2=eLEDOff;}
+	#endif
+  // ver si de debe apagar el buzzer
+  if (tiempoInformeLED0+tiempoInformeLED1+tiempoInformeLED2+tiempoEntrada+tiempoSalida+tiempoAlarma+tiempoAlarmaPausa ==0){estadoBuzzer=eBuzzerOff;}
+  // si se presiona el boton de reset
+  if (boton){
+	  DEBUGLN(F("Boton"));
+	  tiempoInformeLED0=0;
+	  estadoLED0=eLEDOff;
+	  tiempoInformeLED1=0;
+	  estadoLED1=eLEDOff;
+	  tiempoInformeLED2=0;
+	  estadoLED2=eLEDOff;
+	  estadoBuzzer=eBuzzerOff;
+  }
+
   // actualizar salidas
   actualizaSalida(pbuzzer,estadoBuzzer,true);
   actualizaSalida(pSirena,estadoSirena,false);
@@ -150,7 +178,7 @@ void checkSensores(){
 		estadoAlarma=eEntrada;
 		imprimeEstadoAlarma();
 		tiempoEntrada=SegEntrada;
-		estadoBuzzer=eBuzzerOPulsoLento;
+		estadoBuzzer=eBuzzerPulsoLento;
 		*estadoLEDPropio=eLEDPulsoRapido;
 	}
 	else{
@@ -165,7 +193,7 @@ void activaAlarma(){
 		imprimeEstadoAlarma();
     	tiempoAlarma=SegAlarma;
     	estadoSirena=eSirenaOn;
-    	estadoBuzzer=eBuzzerOPulsoRapido;
+    	estadoBuzzer=eBuzzerPulsoRapido;
     	*estadoLEDPropio=eLEDPulsoRapido;
     	// envia mensaje
         despachaMensaje(mInicioAlarma, IDCasa); // reporte

@@ -54,6 +54,7 @@ void creaMensaje(boolean tipoMensaje, char mXbee, byte idMensaje);
 void despachaMensaje(byte msg, char casa);
 void recibeMensaje(char msg, char casa);
 byte IdMensaje(byte msg);
+void informaAlarma(char casa);
 void atiendeTimer();
 void armarAlarma();
 void desarmarAlarma();
