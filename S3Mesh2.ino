@@ -10,45 +10,33 @@ void loop();
 // modo depuracion, comentar para apagar.
 #define MODO_DEBUG
 
-// macros de debug
-#ifdef MODO_DEBUG
-  #define DEBUG(x)  Serial.print (x)
-  #define DEBUGLN(x)  Serial.println (x)
-  #define DEBUGDEC(x)  Serial.print (x, DEC)
-  #define DEBUGW(x)  Serial.write (x)
-  #define DEBUGFULL(x)    \
-    Serial.print(millis());     \
-    Serial.print(": ");    \
-    Serial.print(__PRETTY_FUNCTION__); \
-    Serial.print(' ');      \
-    Serial.print(__FILE__);     \
-    Serial.print(':');      \
-    Serial.print(__LINE__);     \
-    Serial.print(' ');      \
-    Serial.println(x);
-#else
-  #define DEBUG(x)
-  #define DEBUGLN(x) 
-  #define DEBUGDEC(x)
-  #define DEBUGW(x) 
-  #define DEBUGFULL(x)
-#endif
-
 // includes
 #include <SoftwareSerial.h>
 #include <Metro.h>
 #include <XBee.h>
 #include <avr/pgmspace.h>
+#include <debug.h>
 
 // defines
 // numero telefonico para los SMS
 #define numeroDestinatario 92300776
 
 // puertos
+// seriales original
+//#define pDebugRX 0
+//#define pDebugTX 1
+//#define pXbeeRX 3  //r
+//#define pXbeeTX 2  //r
+//#define pGSMRX 4	//r amarillo
+//#define pGSMTX 5	// r blanco
+
+// Seriales
+#define pGSMRX 0 //r amarillo
+#define pGSMTX 1 // r blanco
 #define pXbeeRX 3  //r
 #define pXbeeTX 2  //r
-#define pGSMRX 4	//r amarillo
-#define pGSMTX 5	// r blanco
+#define pDebugRX 4	
+#define pDebugTX 5	
 #define pLED0 12 //r
 #define pLED1 11  //r
 #define pLED2 10  //r
@@ -115,7 +103,6 @@ struct stMensaje{
 };
 
 stMensaje mensajesXbee[nMensajes];
-//char mXbee[] ={'A','D','I','S','P','E'};
 
 // mensajes SMS
 prog_char string_0[] PROGMEM = "Armada ";
@@ -198,10 +185,9 @@ ModemStatusResponse msr = ModemStatusResponse();
 // Objeto serial para el Xbee
 SoftwareSerial SerialXbee(pXbeeRX, pXbeeTX); // RX, TX
 
-// Objeto serial para el modem, si aplica
-#ifdef ID1
-  SoftwareSerial SerialGSM(pGSMRX, pGSMTX); // RX, TX
-#endif
+// puerto serial para el debug, importante para que funcione la librería
+SoftwareSerial SerialDebug(pDebugRX, pDebugTX); // RX, TX
+Print* pSerialDebug = &SerialDebug;
 
 // objeto timer
 Metro timerMetro = Metro(250); 
@@ -219,18 +205,15 @@ void loop() {
     // realiza las tareas por timer
     atiendeTimer();  
   }
-  if (true){//(SerialXbee.available()){
-    atiendeXbee();  
-  }
   
+  atiendeXbee();  
+    
   #ifdef ID1
-  if (SerialGSM.available()){
+  if (Serial.available()){
     atiendeGSM();  
   }
   #endif  
-
 }
-
 
 // rutina para recuperar textos desde flash
 char* t(int texto){

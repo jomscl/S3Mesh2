@@ -8,8 +8,8 @@ void configModem(){
 void atiendeGSM(){
   // por ahora, solo vaciar el buffer
   char c;
-  while (SerialGSM.available()){
-      c=SerialGSM.read();
+  while (Serial.available()){
+      c=Serial.read();
   }
 }
 
@@ -19,8 +19,8 @@ void resetGsm(){
  
   while (!ok){
     // descargar el buffer gsm
-    while (SerialGSM.available()){
-      c=SerialGSM.read();  
+    while (Serial.available()){
+      c=Serial.read();  
     }  
     
     // ciclo de reinicio
@@ -32,11 +32,11 @@ void resetGsm(){
     delay(5000);
     
     // revisión de actividad
-    SerialGSM.println("AT");
+    Serial.println("AT");
     delay(200);
-    while (SerialGSM.available()){
-      c=SerialGSM.read();
-	  DEBUG(c);
+    while (Serial.available()){
+      c=Serial.read();
+      //DEBUG(c);
       if(c=='O'){ok=true;}
     }
   }
@@ -46,16 +46,16 @@ void resetGsm(){
 void despachaSMS(byte mensaje, char casa){
   
   // numero del destinatario
-  SerialGSM.print(F("AT+CMGS=\""));
-  SerialGSM.print(numeroDestinatario);
-  SerialGSM.println("\"");
+  Serial.print(F("AT+CMGS=\""));
+  Serial.print(numeroDestinatario);
+  Serial.println("\"");
   delay(10);
   
   // mensaje
-  SerialGSM.print(t(mensaje));
-  SerialGSM.print(" C:");
-  SerialGSM.print(casa);
-  SerialGSM.write(26); // control z
+  Serial.print(t(mensaje));
+  Serial.print(" C:");
+  Serial.print(casa);
+  Serial.write(26); // control z
   delay(1000);
   
   // borrado de mensajes anteriores
@@ -64,7 +64,7 @@ void despachaSMS(byte mensaje, char casa){
 }
 
 void borrado_sms(){
-  SerialGSM.println(F("AT+CMGD=1,4"));
+  Serial.println(F("AT+CMGD=1,4"));
   delay(200);
 }
 

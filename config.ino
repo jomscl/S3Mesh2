@@ -1,10 +1,9 @@
 void config(){
   // configuracion del DEBUG
   #ifdef MODO_DEBUG
-    Serial.begin(9600);
+    SerialDebug.begin(9600);
   #endif
-
-
+  DEBUGLN(F("Boot"));
   
   // iniciar el puerto serial del XBee
   SerialXbee.begin(9600);
@@ -14,11 +13,11 @@ void config(){
   
     // iniciar el puerto serial del modem, si aplica
   #ifdef ID1
-    SerialGSM.begin(9600);
+    Serial.begin(9600);
     configModem();
   #endif
   
-	SerialXbee.listen();
+  SerialXbee.listen();
 
   // Configuración pines
   pinMode(pLED0,OUTPUT);
@@ -42,7 +41,6 @@ void config(){
   randomSeed(analogRead(pRandom));
   nuevoTiempoPing();
 
-
   // crear los mensajes
   creaMensaje(tXBeeReporte,'A',0);
   creaMensaje(tXBeeReporte,'D',1);
@@ -50,6 +48,9 @@ void config(){
   creaMensaje(tXBeeComunitario,'S',3);
   creaMensaje(tXBeeReporte,'P',4);
   creaMensaje(tXBeeReporte,'E',5);
+  
+  DEBUGLN(F("Encendida"));
+  despachaMensaje(mEncendida, IDCasa); // reporte
 }
 
 void creaMensaje(boolean tipoMensaje, char mXbee, byte idMensaje){
