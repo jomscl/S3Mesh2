@@ -88,6 +88,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="debug.h">
+      <FileType>CppCode</FileType>
+    </ClInclude>
     <ClInclude Include="Visual Micro\.S3Mesh2.vsarduino.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

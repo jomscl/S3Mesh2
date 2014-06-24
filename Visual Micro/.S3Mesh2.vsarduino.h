@@ -45,8 +45,10 @@ char* t(int texto);
 void configModem();
 void atiendeGSM();
 void resetGsm();
+void despachaSMS2(byte mensaje, char casa);
 void despachaSMS(byte mensaje, char casa);
 void borrado_sms();
+void limpiaGSM();
 void atiendeXbee();
 void despachaXbee(byte msg, char casa);
 void config();
@@ -71,6 +73,7 @@ void imprimeEstadoAlarma();
 #include "C:\Users\jom\Documents\Desarrollos\Github\S3Mesh2\GSM.ino"
 #include "C:\Users\jom\Documents\Desarrollos\Github\S3Mesh2\XBEE.ino"
 #include "C:\Users\jom\Documents\Desarrollos\Github\S3Mesh2\config.ino"
+#include "C:\Users\jom\Documents\Desarrollos\Github\S3Mesh2\debug.h"
 #include "C:\Users\jom\Documents\Desarrollos\Github\S3Mesh2\msgManager.ino"
 #include "C:\Users\jom\Documents\Desarrollos\Github\S3Mesh2\timer.ino"
 #endif

@@ -15,7 +15,7 @@ void loop();
 #include <Metro.h>
 #include <XBee.h>
 #include <avr/pgmspace.h>
-#include <debug.h>
+#include "debug.h"
 
 // defines
 // numero telefonico para los SMS
@@ -112,7 +112,7 @@ prog_char string_3[] PROGMEM = "Despacho Alarma ";
 prog_char string_4[] PROGMEM = "Ping ";
 prog_char string_5[] PROGMEM = "Encendida ";
 
-char buffer[16];    // debe ser tan grande como el string más grande.
+char buffer[18];    // debe ser tan grande como el string más grande.
 
 // Vector de mensajes
 PROGMEM const char *string_table[] = 	 

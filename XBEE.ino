@@ -26,7 +26,7 @@ void atiendeXbee(){
 		DEBUGLN();
 
         // procesar el mensaje
-        recibeMensaje((char)mensajeXbeeEntrada[0],mensajeXbeeEntrada[1]);
+        recibeMensaje(mensajeXbeeEntrada[0],mensajeXbeeEntrada[1]);
         
       } else if (xbee.getResponse().getApiId() == MODEM_STATUS_RESPONSE) {
         xbee.getResponse().getModemStatusResponse(msr);

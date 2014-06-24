@@ -26,5 +26,8 @@
     <ClInclude Include="Visual Micro\.S3Mesh2.vsarduino.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
+    <ClInclude Include="debug.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

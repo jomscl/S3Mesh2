@@ -42,30 +42,40 @@ void resetGsm(){
   }
   DEBUGLN(F("MODEM OK"));
 }
+void despachaSMS2(byte mensaje, char casa){
+}
 
 void despachaSMS(byte mensaje, char casa){
   
   // numero del destinatario
   Serial.print(F("AT+CMGS=\""));
   Serial.print(numeroDestinatario);
-  Serial.println("\"");
+  Serial.println(F("\""));
   delay(10);
   
   // mensaje
+  Serial.print("Mensaje S3:");
   Serial.print(t(mensaje));
-  Serial.print(" C:");
+  Serial.print(F(" M:"));
+   Serial.print(mensajesXbee[mensaje].mXbee);
+  Serial.print(F(" C:"));
   Serial.print(casa);
   Serial.write(26); // control z
   delay(1000);
-  
+  limpiaGSM();
   // borrado de mensajes anteriores
   borrado_sms();
   DEBUGLN(F("SMS despachado"));
 }
 
 void borrado_sms(){
-  Serial.println(F("AT+CMGD=1,4"));
-  delay(200);
+	Serial.println(F("AT+CMGD=1,4"));
+	delay(200);
+	limpiaGSM();
 }
 
 #endif // fin de la compilación para el ID1
+
+void limpiaGSM(){
+	Serial.flush();
+}
